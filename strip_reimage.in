@@ -1,0 +1,42 @@
+#!/bin/bash
+
+## number of frames to skip
+SKIP=100
+
+## if you want to include heating/equilibration, enter "YES"; otherwise, keep the default
+EQ="NO"
+
+echo "Skipping every "$SKIP" frames"
+
+echo "parm system.prmtop" > traj_script.in 
+LAST=$(ls -1 Prod_*.rst | sed 's/.*_\([0-9]\+\).*/\1/' | sort -n | tail -n1)
+##LAST=1    # if you want to specify your own last production file to read
+
+if [ "$EQ" == "YES" ]; then
+	echo "trajin system.inpcrd" >> traj_script.in	
+	echo "trajin Heat_1.nc" >> traj_script.in
+	echo "trajin Heat_2.nc" >> traj_script.in
+
+	for i in `seq 1 6`;
+	do
+		echo "trajin Eq_"$i".nc" >> traj_script.in
+	done
+fi
+
+for i in `seq 1 $LAST`;
+do
+	echo "trajin Prod_"$i".nc" >> traj_script.in 
+done
+
+echo "strip '(:POPC | :TIP3 | :SOD | :CLA)'" >>	traj_script.in
+echo "trajout 1_thru_"$LAST"_stripped.nc" >> traj_script.in
+echo "trajout 1_thru_"$LAST"_stripped.pdb" onlyframes 1 >> traj_script.in
+echo "go" >> traj_script.in
+echo "clear all" >> traj_script.in
+echo "parm 1_thru_"$LAST"_stripped.pdb nobondsearch" >> traj_script.in
+echo "trajin 1_thru_"$LAST"_stripped.nc" >> traj_script.in
+echo "center origin '!(:POPC | :TIP3 | :SOD | :CLA)'" >> traj_script.in
+echo "image origin center" >> traj_script.in
+echo "trajout 1_thru_"$LAST"_stripped_reimaged.nc" >> traj_script.in
+echo "go" >> traj_script.in
+eval "cpptraj system.prmtop traj_script.in"

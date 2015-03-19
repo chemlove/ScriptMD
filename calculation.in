@@ -1,0 +1,9 @@
+parm system.prmtop
+dihedral :238@CA :238@CB :238@CG :238@CD1 out active_apo_4_dihedral_289_CA_CB_CG_CD1.txt
+dihedral :242@CA :242@CB :242@CG :242@CD1 out active_apo_4_dihedral_293_CA_CB_CG_CD1.txt
+vector trp corrplane out trp_normal.csv ':242 & (@CZ2 | @CH2 | @CZ3 | @CE3 | @CD2 | @CE2)'
+vector phe corrplane out phe_normal.csv ':238 & (@CD1 | @CE1 | @CZ | @CE2 | @CD2 | @CG)'
+vectormath vec1 phe vec2 trp out phe289_trp293_angle.csv dotangle
+distance dist ':242 & (@CG | @CD2 | @CE2 | @NE1 | @CD1)' ':238 & (@CD1 | @CE1 | @CZ | @CE2 | @CD2 | @CG)' geom out phe289_trp293_dist.csv
+go
+

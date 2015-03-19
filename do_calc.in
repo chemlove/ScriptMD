@@ -1,0 +1,34 @@
+"parm system.prmtop" > calc_script.in
+
+## if you want to include heating/equilibration, enter "YES"; otherwise, keep the default
+EQ="YES"
+PROD="YES"
+
+##compute the number of trajectory files contained
+LAST=$(ls -1 Prod_*.nc | sed 's/.*_\([0-9]\+\).*/\1/' | sort -n | tail -n1)
+
+##include heating/equilibration into the trajectory if you so desire
+if [ "$EQ" == "YES" ]; then
+        echo "trajin system.inpcrd" >> calc_script.in
+        echo "trajin Heat_1.nc" >> calc_script.in
+        echo "trajin Heat_2.nc" >> calc_script.in
+
+        for i in `seq 1 6`;
+        do
+          	echo "trajin Eq_"$i".nc" >> calc_script.in
+        done
+
+fi
+	
+if [ "$PROD" == "YES" ]; then
+
+        ##include all production trajectory files
+        for i in `seq 1 $LAST`;
+        do
+          	echo "trajin Prod_"$i".nc" >> calc_script.in
+        done
+fi
+
+echo "readinput calculation.in" >> calc_script.in
+echo "go" >> calc_script.in
+eval "cpptraj system.prmtop calc_script.in"
