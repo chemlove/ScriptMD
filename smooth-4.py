@@ -1,3 +1,5 @@
+#W ritten by Adrian Sanborn and Evan N. Feinberg
+
 # smooths a list of values using weighted moving average, up to N values
 # in each direction
 def smooth(data, N):
