@@ -1,8 +1,5 @@
 #!/bin/bash
 
-## number of frames to skip
-SKIP=100
-
 ## if you want to include heating/equilibration, enter "YES"; otherwise, keep the default
 EQ="NO"
 
